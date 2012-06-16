@@ -27,7 +27,7 @@ def VideoMainMenu():
 		if showId in show_ids:
 			continue
 		else:
-			oc.add(DirectoryObject(key=callback(ShowMenu, showName=showName, showId=showId), title=shownName))
+			oc.add(DirectoryObject(key=Callback(ShowMenu, showName=showName, showId=showId), title=showName))
 			show_ids.append(showId)
 	oc.objects.sort(key = lambda obj: obj.title)
 	return oc
@@ -43,11 +43,12 @@ def ShowMenu(showName, showId):
 		season = episode.get('epiSeasonNumber')
 		try:
 		    epIndex = int(epIndex)
-		    absIndex = None
 		except:
-		    epIndex = episode.get('episodeNumber')
-		    epIndex = int(epIndex.partition(season)[2])
-		season = int(season)
+		    epIndex = None
+		try:    
+		    season = int(season)
+		except:
+			season = None
 		summary = episode.xpath('./description')[0].text
 		thumb = episode.get('thumbnailUrl')
 		content_rating = episode.get('rating')
@@ -61,7 +62,7 @@ def ShowMenu(showName, showId):
 		    date = Datetime.ParseDate(date)
 		except:
 		    date = None
-		episodeUrl = episode.xpath('./episoeLink')[0].get('episodeUrl')
+		episodeUrl = episode.xpath('./episodeLink')[0].get('episodeUrl')
 		oc.add(EpisodeObject(url=episodeUrl, title=title, show=show, index=epIndex, season=season, summary=summary,
 			content_rating=content_rating, duration=duration, thumb=Resource.ContentsOfURLWithFallback(url=thumb, fallback=ICON)))
 	return oc
